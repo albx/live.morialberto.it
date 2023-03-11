@@ -1,0 +1,47 @@
+﻿@page "/"
+
+@inject StreamingsService Service
+
+<PageTitle>Le mie dirette</PageTitle>
+<HeadContent>
+    <meta name="title" content="Le mie dirette" />
+    <meta name="description" content="Qui puoi trovare l'elenco delle dirette pianificate sul canale" />
+</HeadContent>
+
+<h1>Dirette pianificate</h1>
+<hr />
+
+<div class="row">
+    @if (!model.Streamings.Any())
+    {
+        <div class="col-md-12">
+            <h2>Nessuna live pianificata</h2>
+        </div>
+    }
+    else
+    {
+        @foreach (var streaming in model.Streamings)
+        {
+            <div class="col-md-4 mb-2">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@streaming.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            @streaming.ScheduleDate.ToShortDateString() @streaming.StartTime.ToShortTimeString() - @streaming.EndTime.ToShortTimeString()
+                        </h6>
+                        <a href="#">Vai al dettaglio</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private IndexViewModel model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await Service.GetStreamingsForHomePageAsync();
+    }
+}

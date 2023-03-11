@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "MoriAlberto.Live.Api": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7219",
+      "launchBrowser": false
+    }
+  }
+}
