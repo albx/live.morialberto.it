@@ -15,6 +15,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MoriAlberto.Live.Models\MoriAlberto.Live.Models.csproj" />
+    <ProjectReference Include="..\MoriAlberto.Live.ReadModel\MoriAlberto.Live.ReadModel.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

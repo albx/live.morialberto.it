@@ -1,21 +1,19 @@
-﻿using Dapper;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using MoriAlberto.Live.Api.Configuration;
 using MoriAlberto.Live.Models;
-using System.Data.SqlClient;
+using MoriAlberto.Live.ReadModel;
 
 namespace MoriAlberto.Live.Api.Services;
 
 public class StreamingsService
 {
-    private readonly KittDatabaseConfiguration _databaseConfiguration;
-
     private readonly ILogger<StreamingsService> _logger;
 
-    public StreamingsService(IOptions<KittDatabaseConfiguration> databaseConfigurationOptions, ILogger<StreamingsService> logger)
+    public IDatabase Database { get; }
+
+    public StreamingsService(IDatabase database, ILogger<StreamingsService> logger)
     {
-        _databaseConfiguration = databaseConfigurationOptions?.Value ?? throw new ArgumentNullException(nameof(databaseConfigurationOptions));
+        Database = database ?? throw new ArgumentNullException(nameof(database));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -28,18 +26,16 @@ public class StreamingsService
     {
         try
         {
-            using var connection = new SqlConnection(_databaseConfiguration.ConnectionString);
-            connection.Open();
+            var streamings = await Database.Streamings
+                .Select(s => new StreamingListItem
+                {
+                    EndTime = s.EndingTime,
+                    ScheduleDate = s.ScheduleDate,
+                    Slug = s.Slug,
+                    StartTime = s.StartingTime,
+                    Title = s.Title
+                }).Take(20).ToArrayAsync();
 
-            var sql = """
-                      SELECT TOP 20
-                      c.Title AS Title, c.Slug AS Slug, s.ScheduleDate AS ScheduleDate, s.StartingTime AS StartTime, s.EndingTime AS EndTime
-                      FROM KITT_Contents c
-                      JOIN KITT_Streamings s ON c.Id=s.Id
-                      ORDER BY s.ScheduleDate, s.StartingTime, s.EndingTime
-                      """;
-
-            var streamings = await connection.QueryAsync<StreamingListItem>(sql);
             return streamings;
         }
         catch (Exception ex)
