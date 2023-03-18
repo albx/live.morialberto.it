@@ -23,15 +23,7 @@
         @foreach (var streaming in model.Streamings)
         {
             <div class="col-md-4 mb-2">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">@streaming.Title</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">
-                            @streaming.ScheduleDate.ToShortDateString() @streaming.StartTime.ToShortTimeString() - @streaming.EndTime.ToShortTimeString()
-                        </h6>
-                        <a href="#">Vai al dettaglio</a>
-                    </div>
-                </div>
+                <StreamingItem Streaming="streaming" />
             </div>
         }
     }

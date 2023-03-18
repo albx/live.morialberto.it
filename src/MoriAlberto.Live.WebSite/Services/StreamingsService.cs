@@ -1,4 +1,6 @@
-﻿using MoriAlberto.Live.WebSite.Model;
+﻿using MoriAlberto.Live.Models;
+using MoriAlberto.Live.WebSite.Model;
+using System.Net.Http.Json;
 
 namespace MoriAlberto.Live.WebSite.Services;
 
@@ -14,7 +16,7 @@ public class StreamingsService
     public Task<IndexViewModel> GetStreamingsForHomePageAsync()
     {
         var model = new IndexViewModel();
-        model.Streamings = Enumerable.Range(0, 6).Select(i => new IndexViewModel.ScheduledStreaming
+        model.Streamings = Enumerable.Range(0, 6).Select(i => new StreamingListItem
         {
             Title = $"Test {i}",
             ScheduleDate = DateOnly.FromDateTime(DateTime.Now),
@@ -24,5 +26,16 @@ public class StreamingsService
         });
 
         return Task.FromResult(model);
+    }
+
+    public async Task<ArchiveViewModel> GetStreamingsArchiveAsync()
+    {
+        var streamings = await Client.GetFromJsonAsync<IEnumerable<StreamingListItem>>("api/streamings");
+        var model = new ArchiveViewModel
+        {
+            Streamings = streamings ?? Array.Empty<StreamingListItem>(),
+        };
+
+        return model;
     }
 }

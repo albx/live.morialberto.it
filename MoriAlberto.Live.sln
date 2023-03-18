@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.WebSite", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.Api", "src\MoriAlberto.Live.Api\MoriAlberto.Live.Api.csproj", "{32B8DA2F-4A5B-42A8-BCBA-54536AA0318D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoriAlberto.Live.Models", "src\MoriAlberto.Live.Models\MoriAlberto.Live.Models.csproj", "{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.Models", "src\MoriAlberto.Live.Models\MoriAlberto.Live.Models.csproj", "{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

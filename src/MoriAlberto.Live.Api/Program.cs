@@ -1,7 +1,9 @@
+using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MoriAlberto.Live.Api.Configuration;
+using MoriAlberto.Live.Api.Data;
 using MoriAlberto.Live.Api.Services;
 
 var host = new HostBuilder()
@@ -14,6 +16,9 @@ var host = new HostBuilder()
         });
 
         services.AddScoped<StreamingsService>();
+
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+        SqlMapper.AddTypeHandler(new TimeOnlyTypeHandler());
     })
     .Build();
 

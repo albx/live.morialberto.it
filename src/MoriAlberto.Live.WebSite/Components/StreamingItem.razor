@@ -1,0 +1,15 @@
+﻿<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Streaming.Title</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+            @Streaming.ScheduleDate.ToShortDateString() @Streaming.StartTime.ToShortTimeString() - @Streaming.EndTime.ToShortTimeString()
+        </h6>
+        <a href="#">Vai al dettaglio</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public StreamingListItem Streaming { get; set; } = default!;
+}
