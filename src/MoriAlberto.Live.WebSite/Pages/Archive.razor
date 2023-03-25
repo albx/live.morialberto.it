@@ -1,7 +1,25 @@
-﻿@page "/archivio"
+﻿@page "/archivio/{page:int?}"
 @inject StreamingsService Service
 
 <h1>Le mie dirette</h1>
+<hr />
+
+<EditForm class="row" role="form" Model="search" OnValidSubmit="SearchStreamingsAsync">
+    <div class="col-md-2">
+        <InputSelect @bind-Value="search.Sort" class="form-select">
+            @foreach (var sort in Enum.GetValues<StreamingsSearchParameters.SortDirection>())
+            {
+                <option value="@sort">@sort.ToString()</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="col-md-8">
+        <InputText @bind-Value="search.Query" class="form-control" placeholder="Cerca una diretta..." aria-label="Cerca una diretta" />
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-outline-secondary" type="submit" id="button-search">Cerca</button>
+    </div>
+</EditForm>
 <hr />
 
 <div class="row">
@@ -21,12 +39,55 @@
         }
     }
 </div>
+@if (model.NumberOfPages > 0)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="Page navigation" class="d-flex justify-content-end">
+                <span class="align-baseline me-2">pag. @search.Page di @model.NumberOfPages</span>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="archivio" aria-label="First">
+                            <span aria-hidden="true">&laquo;</span>
+                            First
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="archivio/@PreviousPage">Previous</a></li>
+                    <li class="page-item"><a class="page-link" href="archivio/@NextPage">Next</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="archivio/@model.NumberOfPages" aria-label="Last">
+                            Last
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+}
 
-@code { 
+@code {
+    [Parameter]
+    public int? Page { get; set; }
+
+    private int PreviousPage => search.Page <= 1 ? 1 : search.Page - 1;
+
+    private int NextPage => search.Page >= model.NumberOfPages ? model.NumberOfPages : search.Page + 1;
+
     private ArchiveViewModel model = new();
 
-    protected override async Task OnInitializedAsync()
+    private StreamingsSearchParameters search = new();
+
+    private async Task LoadStreamingsAsync() => model = await Service.GetStreamingsArchiveAsync(search);
+
+    private async Task SearchStreamingsAsync()
     {
-        model = await Service.GetStreamingsArchiveAsync();
+        await LoadStreamingsAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        search.Page = Page ?? 1;
+        await LoadStreamingsAsync();
     }
 }

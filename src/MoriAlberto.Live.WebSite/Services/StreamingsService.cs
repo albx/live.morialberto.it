@@ -13,27 +13,33 @@ public class StreamingsService
         Client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public Task<IndexViewModel> GetStreamingsForHomePageAsync()
+    public async Task<IndexViewModel> GetStreamingsForHomePageAsync()
     {
         var model = new IndexViewModel();
-        model.Streamings = Enumerable.Range(0, 6).Select(i => new StreamingListItem
-        {
-            Title = $"Test {i}",
-            ScheduleDate = DateOnly.FromDateTime(DateTime.Now),
-            StartTime = new TimeOnly(16, 0),
-            EndTime = new TimeOnly(18, 0),
-            Slug = $"test-{i}"
-        });
 
-        return Task.FromResult(model);
+        var streamings = await Client.GetFromJsonAsync<IEnumerable<StreamingList.StreamingListItem>>("api/streamings/scheduled");
+        model.Streamings = streamings ?? Array.Empty<StreamingList.StreamingListItem>();
+
+        return model;
     }
 
-    public async Task<ArchiveViewModel> GetStreamingsArchiveAsync()
+    public async Task<ArchiveViewModel> GetStreamingsArchiveAsync(StreamingsSearchParameters? search = null)
     {
-        var streamings = await Client.GetFromJsonAsync<IEnumerable<StreamingListItem>>("api/streamings");
+        var url = "api/streamings";
+        if (search is not null)
+        {
+            url = $"{url}?sort={search.Sort}&p={search.Page}";
+            if (!string.IsNullOrWhiteSpace(search.Query))
+            {
+                url = $"{url}&q={System.Web.HttpUtility.UrlEncode(search.Query)}";
+            }
+        }
+
+        var streamingList = await Client.GetFromJsonAsync<StreamingList>(url);
         var model = new ArchiveViewModel
         {
-            Streamings = streamings ?? Array.Empty<StreamingListItem>(),
+            Streamings = streamingList?.Streamings ?? Array.Empty<StreamingList.StreamingListItem>(),
+            NumberOfPages = streamingList?.NumberOfPages ?? 0
         };
 
         return model;

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MoriAlberto.Live.Models;
 using MoriAlberto.Live.ReadModel;
+using System.Linq.Dynamic.Core;
 
 namespace MoriAlberto.Live.Api.Services;
 
@@ -17,31 +18,66 @@ public class StreamingsService
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<IEnumerable<StreamingListItem>> GetScheduledStreamingsAsync()
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<IEnumerable<StreamingListItem>> GetAllStreamingsAsync()
+    public async Task<IEnumerable<StreamingList.StreamingListItem>> GetScheduledStreamingsAsync()
     {
         try
         {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
             var streamings = await Database.Streamings
-                .Select(s => new StreamingListItem
+                .OrderedBySchedule(ascending: false)
+                .Where(s => s.ScheduleDate >= today)
+                .Select(s => new StreamingList.StreamingListItem
                 {
                     EndTime = s.EndingTime,
                     ScheduleDate = s.ScheduleDate,
                     Slug = s.Slug,
                     StartTime = s.StartingTime,
                     Title = s.Title
-                }).Take(20).ToArrayAsync();
+                }).Take(4).ToArrayAsync();
 
             return streamings;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Errore durante il recupero di tutte le live: {ErrorMessage}", ex.Message);
-            return Array.Empty<StreamingListItem>();
+            return Array.Empty<StreamingList.StreamingListItem>();
+        }
+    }
+
+    public async Task<StreamingList> GetAllStreamingsAsync(StreamingsSearchParameters search)
+    {
+        try
+        {
+            var ascending = search.Sort == StreamingsSearchParameters.SortDirection.Ascending;
+            var streamingsQuery = Database.Streamings.OrderedBySchedule(ascending);
+            if (!string.IsNullOrWhiteSpace(search.Query))
+            {
+                streamingsQuery = streamingsQuery.Where(s => s.Title.Contains(search.Query));
+            }
+
+            var pagedResult = streamingsQuery
+                .Select(s => new StreamingList.StreamingListItem
+                {
+                    EndTime = s.EndingTime,
+                    ScheduleDate = s.ScheduleDate,
+                    Slug = s.Slug,
+                    StartTime = s.StartingTime,
+                    Title = s.Title
+                }).PageResult(search.Page, 20);
+
+            var streamings = await pagedResult.Queryable.ToArrayAsync();
+
+            return new StreamingList
+            {
+                Streamings = streamings,
+                NumberOfPages = pagedResult.PageCount
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante il recupero di tutte le live: {ErrorMessage}", ex.Message);
+            return new StreamingList();
         }
     }
 

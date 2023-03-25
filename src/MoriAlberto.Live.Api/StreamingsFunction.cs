@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using MoriAlberto.Live.Api.Services;
+using MoriAlberto.Live.Models;
 using System.Net;
 
 namespace MoriAlberto.Live.Api
@@ -34,12 +36,38 @@ namespace MoriAlberto.Live.Api
         public async Task<HttpResponseData> GetStreamings(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "streamings")] HttpRequestData request)
         {
-            var streamings = await Service.GetAllStreamingsAsync();
+            var search = ParseQueryString(request);
+            var streamings = await Service.GetAllStreamingsAsync(search);
 
             var response = request.CreateResponse();
             await response.WriteAsJsonAsync(streamings);
 
             return response;
+        }
+
+        private StreamingsSearchParameters ParseQueryString(HttpRequestData request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Url.Query))
+            {
+                return new StreamingsSearchParameters();
+            }
+
+            var query = QueryHelpers.ParseQuery(request.Url.Query);
+            var search = new StreamingsSearchParameters();
+            if (query.ContainsKey("q") && !string.IsNullOrWhiteSpace(query["q"]))
+            {
+                search.Query = query["q"].ToString() ?? string.Empty;
+            }
+            if (query.ContainsKey("sort") && Enum.TryParse<StreamingsSearchParameters.SortDirection>(query["sort"], out var sort))
+            {
+                search.Sort = sort;
+            }
+            if (query.ContainsKey("p") && int.TryParse(query["p"], out var page))
+            {
+                search.Page = page;
+            }
+
+            return search;
         }
 
         [Function(nameof(GetStreamingDetail))]

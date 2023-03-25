@@ -4,5 +4,7 @@ namespace MoriAlberto.Live.WebSite.Model;
 
 public class ArchiveViewModel
 {
-    public IEnumerable<StreamingListItem> Streamings { get; set; } = Enumerable.Empty<StreamingListItem>();
+    public IEnumerable<StreamingList.StreamingListItem> Streamings { get; set; } = Enumerable.Empty<StreamingList.StreamingListItem>();
+
+    public int NumberOfPages { get; set; }
 }
