@@ -2,7 +2,7 @@
 
 @inject StreamingsService Service
 
-<PageTitle>Le mie dirette</PageTitle>
+<PageTitle>Dirette pianificate</PageTitle>
 <HeadContent>
     <meta name="title" content="Le mie dirette" />
     <meta name="description" content="Qui puoi trovare l'elenco delle dirette pianificate sul canale" />
@@ -11,29 +11,42 @@
 <h1>Dirette pianificate</h1>
 <hr />
 
-<div class="row">
-    @if (!model.Streamings.Any())
-    {
-        <div class="col-md-12">
-            <h2>Nessuna live pianificata</h2>
-        </div>
-    }
-    else
-    {
-        @foreach (var streaming in model.Streamings)
+<Loader Loading="loading">
+    <div class="row">
+        @if (!model.Streamings.Any())
         {
-            <div class="col-md-6 mb-2">
-                <StreamingItem Streaming="streaming" />
+            <div class="col-md-12">
+                <h2>Nessuna live pianificata</h2>
             </div>
         }
-    }
-</div>
+        else
+        {
+            @foreach (var streaming in model.Streamings)
+            {
+                <div class="col-md-6 mb-2">
+                    <StreamingItem Streaming="streaming" />
+                </div>
+            }
+        }
+    </div>
+</Loader>
 
 @code {
     private IndexViewModel model = new();
 
+    private bool loading = false;
+
     protected override async Task OnInitializedAsync()
     {
-        model = await Service.GetStreamingsForHomePageAsync();
+        loading = true;
+
+        try
+        {
+            model = await Service.GetStreamingsForHomePageAsync();
+        }
+        finally
+        {
+            loading = false;
+        }
     }
 }

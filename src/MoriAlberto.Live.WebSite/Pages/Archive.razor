@@ -1,70 +1,80 @@
 ﻿@page "/archivio/{page:int?}"
 @inject StreamingsService Service
 
+<PageTitle>Le mie dirette</PageTitle>
+<HeadContent>
+    <meta name="title" content="Le mie dirette" />
+    <meta name="description" content="Qui puoi trovare l'elenco di tutte le dirette sia pianificate che già svolte sul canale" />
+</HeadContent>
+
 <h1>Le mie dirette</h1>
 <hr />
 
-<EditForm class="row" role="form" Model="search" OnValidSubmit="SearchStreamingsAsync">
-    <div class="col-md-2">
-        <InputSelect @bind-Value="search.Sort" class="form-select">
-            @foreach (var sort in Enum.GetValues<StreamingsSearchParameters.SortDirection>())
-            {
-                <option value="@sort">@sort.ToString()</option>
-            }
-        </InputSelect>
-    </div>
-    <div class="col-md-8">
-        <InputText @bind-Value="search.Query" class="form-control" placeholder="Cerca una diretta..." aria-label="Cerca una diretta" />
-    </div>
-    <div class="col-md-2">
-        <button class="btn btn-outline-secondary" type="submit" id="button-search">Cerca</button>
-    </div>
-</EditForm>
-<hr />
-
-<div class="row">
-    @if (!model.Streamings.Any())
-    {
-        <div class="col-md-12">
-            <h2>Nessuna live presente :(</h2>
+<Loader Loading="loading">
+    <EditForm class="row" role="form" Model="search" OnValidSubmit="SearchStreamingsAsync">
+        <div class="col-md-2">
+            <InputSelect @bind-Value="search.Sort" class="form-select">
+                @foreach (var sort in Enum.GetValues<StreamingsSearchParameters.SortDirection>())
+                {
+                    <option value="@sort">@sort.ToString()</option>
+                }
+            </InputSelect>
         </div>
-    }
-    else
-    {
-        @foreach (var streaming in model.Streamings)
+        <div class="col-md-8">
+            <InputText @bind-Value="search.Query" class="form-control" placeholder="Cerca una diretta..." aria-label="Cerca una diretta" />
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary" type="submit" id="button-search">Cerca</button>
+        </div>
+    </EditForm>
+    <hr />
+
+    <div class="row">
+        @if (!model.Streamings.Any())
         {
-            <div class="col-md-3 mb-2">
-                <StreamingItem Streaming="streaming" />
+            <div class="col-md-12">
+                <h2>Nessuna live presente :(</h2>
             </div>
         }
-    }
-</div>
-@if (model.NumberOfPages > 0)
-{
-    <div class="row">
-        <div class="col-md-12">
-            <nav aria-label="Page navigation" class="d-flex justify-content-end">
-                <span class="align-baseline me-2">pag. @search.Page di @model.NumberOfPages</span>
-                <ul class="pagination">
-                    <li class="page-item">
-                        <a class="page-link" href="archivio" aria-label="First">
-                            <span aria-hidden="true">&laquo;</span>
-                            First
-                        </a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="archivio/@PreviousPage">Previous</a></li>
-                    <li class="page-item"><a class="page-link" href="archivio/@NextPage">Next</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="archivio/@model.NumberOfPages" aria-label="Last">
-                            Last
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        else
+        {
+            @foreach (var streaming in model.Streamings)
+            {
+                <div class="col-md-3 mb-2">
+                    <StreamingItem Streaming="streaming" />
+                </div>
+            }
+        }
     </div>
-}
+    @if (model.NumberOfPages > 1)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="Page navigation" class="d-flex">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <span class="page-link">
+                                pagina @search.Page di @model.NumberOfPages
+                            </span>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="archivio/@PreviousPage">
+                                <span aria-hidden="true">&laquo;</span>
+                                prec.
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="archivio/@NextPage">
+                                succ.
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    }
+</Loader>
 
 @code {
     [Parameter]
@@ -74,11 +84,25 @@
 
     private int NextPage => search.Page >= model.NumberOfPages ? model.NumberOfPages : search.Page + 1;
 
+    private bool loading = false;
+
     private ArchiveViewModel model = new();
 
     private StreamingsSearchParameters search = new();
 
-    private async Task LoadStreamingsAsync() => model = await Service.GetStreamingsArchiveAsync(search);
+    private async Task LoadStreamingsAsync()
+    {
+        loading = true;
+        
+        try
+        {
+            model = await Service.GetStreamingsArchiveAsync(search);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
 
     private async Task SearchStreamingsAsync()
     {

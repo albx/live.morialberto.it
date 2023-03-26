@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.Api", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.Models", "src\MoriAlberto.Live.Models\MoriAlberto.Live.Models.csproj", "{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoriAlberto.Live.ReadModel", "src\MoriAlberto.Live.ReadModel\MoriAlberto.Live.ReadModel.csproj", "{D9436BD5-A48A-4BED-AC3B-18F2CB826C80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.ReadModel", "src\MoriAlberto.Live.ReadModel\MoriAlberto.Live.ReadModel.csproj", "{D9436BD5-A48A-4BED-AC3B-18F2CB826C80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

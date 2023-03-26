@@ -1,0 +1,18 @@
+﻿@keyframes fadein {
+    from {
+        opacity: 0.5;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.loader-container {
+    animation: fadein 2s ease-in alternate infinite;
+}
+.loader-container .loader-text {
+    color: #2c3e50;
+    font-size: 2rem;
+    font-weight: 500;
+}
