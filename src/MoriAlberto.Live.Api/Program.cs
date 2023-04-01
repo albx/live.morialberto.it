@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MoriAlberto.Live.Api.Services;
@@ -8,7 +7,7 @@ var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices((context, services) =>
     {
-        services.AddKittReadModel(context.Configuration.GetConnectionString("KittDatabase")!);
+        services.AddKittReadModel(context.Configuration["KittConnectionString"]!);
         services.AddScoped<StreamingsService>();
     })
     .Build();

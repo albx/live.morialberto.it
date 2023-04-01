@@ -16,7 +16,7 @@
             <InputSelect @bind-Value="search.Sort" class="form-select">
                 @foreach (var sort in Enum.GetValues<StreamingsSearchParameters.SortDirection>())
                 {
-                    <option value="@sort">@sort.ToString()</option>
+                    <option value="@sort">@sort.GetDescription()</option>
                 }
             </InputSelect>
         </div>
@@ -93,7 +93,7 @@
     private async Task LoadStreamingsAsync()
     {
         loading = true;
-        
+
         try
         {
             model = await Service.GetStreamingsArchiveAsync(search);
