@@ -1,4 +1,5 @@
-﻿using MoriAlberto.Live.Models;
+﻿using Markdig;
+using MoriAlberto.Live.Models;
 using MoriAlberto.Live.WebSite.Model;
 using System.Net.Http.Json;
 
@@ -43,5 +44,26 @@ public class StreamingsService
         };
 
         return model;
+    }
+
+    public async Task<LiveDetailViewModel?> GetStreamingDetailAsync(string slug)
+    {
+        var streaming = await Client.GetFromJsonAsync<Streaming>($"api/streamings/detail/{slug}");
+        if (streaming is null)
+        {
+            return null;
+        }
+
+        return new LiveDetailViewModel
+        {
+            Abstract = Markdown.ToHtml(streaming.Abstract),
+            EndTime = streaming.EndingTime,
+            ScheduleDate = streaming.ScheduleDate,
+            Seo = streaming.Seo,
+            StartTime = streaming.StartingTime,
+            Title = streaming.Title,
+            TwitchUrl = streaming.HostingChannelUrl,
+            YouTubeUrl = streaming.YouTubeVideoUrl?.Replace("https://youtu.be", "https://www.youtube.com/embed")
+        };
     }
 }

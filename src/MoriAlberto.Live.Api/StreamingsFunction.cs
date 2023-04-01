@@ -72,9 +72,14 @@ namespace MoriAlberto.Live.Api
 
         [Function(nameof(GetStreamingDetail))]
         public async Task<HttpResponseData> GetStreamingDetail(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "streamings/{slug}")] HttpRequestData request,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "streamings/detail/{slug}")] HttpRequestData request,
             string slug)
         {
+            if (string.IsNullOrWhiteSpace(slug))
+            {
+                return request.CreateResponse(HttpStatusCode.BadRequest);
+            }
+
             var streaming = await Service.GetStreamingDetailAsync(slug);
             if (streaming is null)
             {

@@ -8,7 +8,7 @@ public abstract class Content
 
     public string Slug { get; init; } = string.Empty;
 
-    public string Abstract { get; init; } = string.Empty;
+    public string? Abstract { get; init; } = string.Empty;
 
     public virtual SeoData Seo { get; init; } = new();
 

@@ -1,8 +1,74 @@
-﻿@page "/{slug}"
+﻿@page "/d/{slug}"
 
-<h3>DettaglioDiretta</h3>
+@inject StreamingsService Service
+@inject NavigationManager NavigationManager
+
+<PageTitle>live.morialberto.it - @model.Title</PageTitle>
+
+<HeadContent>
+    <meta name="title" content="@model.Seo.Title" />
+    <meta name="description" content="@model.Seo.Description" />
+    <meta name="keywords" content="@model.Seo.Keywords" />
+</HeadContent>
+
+<Loader Loading="loading">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>@model.Title</h1>
+            <hr />
+            @if (!string.IsNullOrWhiteSpace(model.Abstract))
+            {
+                <div class="row">
+                    <div class="col-md-12">
+                        @((MarkupString)model.Abstract)
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-md-4">
+            <aside>
+                <h1>Informazioni</h1>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        @model.ScheduleDate.ToShortDateString() dalle @model.StartTime.ToShortTimeString() alle @model.EndTime.ToShortTimeString() su <a href="@model.TwitchUrl" target="_blank">@model.TwitchUrl</a>
+                    </div>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(model.YouTubeUrl))
+                {
+                    <hr/>
+                    <iframe style="width: 100%; aspect-ratio: 16/9;" src="@model.YouTubeUrl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                }
+            </aside>
+        </div>
+    </div>
+</Loader>
 
 @code {
     [Parameter]
     public string Slug { get; set; } = string.Empty;
+
+    private bool loading = false;
+
+    private LiveDetailViewModel model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+
+        try
+        {
+            var detail = await Service.GetStreamingDetailAsync(Slug);
+            if (detail is null)
+            {
+                NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+
+            model = detail!;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
 }

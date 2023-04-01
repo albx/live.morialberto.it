@@ -10,15 +10,15 @@ public class Streaming
 
     public string Abstract { get; init; } = string.Empty;
 
-    public DateTime ScheduleDate { get; init; }
+    public DateOnly ScheduleDate { get; init; }
 
-    public TimeSpan StartingTime { get; init; }
+    public TimeOnly StartingTime { get; init; }
 
-    public TimeSpan EndingTime { get; init; }
+    public TimeOnly EndingTime { get; init; }
 
     public string HostingChannelUrl { get; init; } = string.Empty;
 
-    public string YouTubeVideoUrl { get; init; } = string.Empty;
+    public string? YouTubeVideoUrl { get; init; } = string.Empty;
 
     public SeoInfo Seo { get; init; } = default!;
 

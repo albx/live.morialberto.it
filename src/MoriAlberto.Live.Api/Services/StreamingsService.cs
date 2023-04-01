@@ -83,6 +83,39 @@ public class StreamingsService
 
     public async Task<Streaming?> GetStreamingDetailAsync(string slug)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var streaming = await Database.Streamings
+                .SingleOrDefaultAsync(s => s.Slug == slug);
+
+            if (streaming is null)
+            {
+                return null;
+            }
+
+            return new Streaming
+            {
+                Abstract = streaming.Abstract ?? string.Empty,
+                EndingTime = streaming.EndingTime,
+                HostingChannelUrl = streaming.HostingChannelUrl,
+                Id = streaming.Id,
+                ScheduleDate = streaming.ScheduleDate,
+                Seo = new Streaming.SeoInfo
+                {
+                    Description = streaming.Seo?.Description ?? string.Empty,
+                    Keywords = streaming.Seo?.Keywords ?? string.Empty,
+                    Title = streaming.Seo?.Title ?? string.Empty,
+                },
+                Slug = streaming.Slug,
+                StartingTime = streaming.StartingTime,
+                Title = streaming.Title,
+                YouTubeVideoUrl = streaming.YouTubeVideoUrl
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Errore durante il recupero del dettaglio della live {Slug}: {ErrorMessage}", slug, ex.Message);
+            throw;
+        }
     }
 }
