@@ -1,0 +1,12 @@
+query GetScheduledStreamings {
+  streamings {
+    items {
+      Id,
+      Title,
+      Slug,
+      ScheduleDate,
+      StartingTime,
+      EndingTime
+    }
+  }
+}
