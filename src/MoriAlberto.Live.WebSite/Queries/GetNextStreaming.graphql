@@ -1,0 +1,22 @@
+query GetNextStreaming($scheduleDate: DateTime) {
+  streamings (
+    orderBy: {
+      ScheduleDate: DESC,
+      StartingTime: DESC,
+      EndingTime: DESC
+    },
+    filter: {
+      ScheduleDate: {gte: $scheduleDate}
+    },
+    first: 1
+  ) {
+    items {
+      Id,
+      Title,
+      Slug,
+      ScheduleDate,
+      EndingTime,
+      StartingTime
+    }
+  }
+}

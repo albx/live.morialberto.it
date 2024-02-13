@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <GraphQL Remove="queries\GetNextStreaming.graphql" />
     <GraphQL Remove="queries\GetScheduledStreamings.graphql" />
   </ItemGroup>
 

@@ -1,5 +1,10 @@
 query GetScheduledStreamings {
-  streamings {
+  streamings (
+    orderBy: {
+      ScheduleDate: DESC,
+      StartingTime: DESC,
+      EndingTime: DESC 
+    }, first: 4) {
     items {
       Id,
       Title,

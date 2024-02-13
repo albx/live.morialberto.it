@@ -4,5 +4,7 @@ namespace MoriAlberto.Live.WebSite.Model;
 
 public class IndexViewModel
 {
-    public IEnumerable<StreamingList.StreamingListItem> Streamings { get; set; } = Enumerable.Empty<StreamingList.StreamingListItem>();
+    public StreamingList.StreamingListItem? NextStreaming { get; set; }
+
+    public IEnumerable<StreamingList.StreamingListItem> Streamings { get; set; } = [];
 }

@@ -17,6 +17,19 @@ public class StreamingsService
     {
         var model = new IndexViewModel();
 
+        model.NextStreaming = (await Client.GetNextStreaming.ExecuteAsync(new DateTimeOffset(DateTime.Today)))
+            .Data?
+            .Streamings
+            .Items
+            .Select(s => new StreamingList.StreamingListItem
+            {
+                Title = s.Title,
+                ScheduleDate = DateOnly.FromDateTime(s.ScheduleDate.DateTime),
+                Slug = s.Slug,
+                EndTime = TimeOnly.Parse(s.EndingTime),
+                StartTime = TimeOnly.Parse(s.StartingTime)
+            }).FirstOrDefault();
+
         var queryResult = await Client.GetScheduledStreamings.ExecuteAsync();
         model.Streamings = queryResult.Data?
             .Streamings

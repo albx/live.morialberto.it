@@ -1,0 +1,20 @@
+{
+  "projects": [
+    {
+      "schema": [
+        "src/MoriAlberto.Live.WebSite/schema.graphql"
+      ],
+      "documents": [
+        "src/MoriAlberto.Live.WebSite/**/*.graphql"
+      ]
+    },
+    {
+      "schema": [
+        "src/MoriAlberto.Live.WebSite/bin/Debug/net8.0/schema.graphql"
+      ],
+      "documents": [
+        "src/MoriAlberto.Live.WebSite/bin/Debug/net8.0/**/*.graphql"
+      ]
+    }
+  ]
+}
