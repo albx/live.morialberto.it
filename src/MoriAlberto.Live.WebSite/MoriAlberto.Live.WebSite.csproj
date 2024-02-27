@@ -7,8 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <GraphQL Remove="Queries\GetLatestStreamings.graphql" />
     <GraphQL Remove="queries\GetNextStreaming.graphql" />
-    <GraphQL Remove="queries\GetScheduledStreamings.graphql" />
+    <GraphQL Remove="queries\GetStreamingsArchive.graphql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,10 +28,6 @@
     <Content Update="wwwroot\images\logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Queries\" />
   </ItemGroup>
 
 </Project>

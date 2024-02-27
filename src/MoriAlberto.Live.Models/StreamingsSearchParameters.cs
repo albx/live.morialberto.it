@@ -8,7 +8,7 @@ public class StreamingsSearchParameters
 
     public SortDirection Sort { get; set; } = SortDirection.Descending;
 
-    public int Page { get; set; } = 1;
+    public string? PageCursor { get; set; } = null;
 
     public enum SortDirection
     {

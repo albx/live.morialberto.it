@@ -1,4 +1,4 @@
-﻿@page "/archivio/{page:int?}"
+﻿@page "/archivio"
 @inject StreamingsService Service
 
 <PageTitle>Le mie dirette</PageTitle>
@@ -38,57 +38,55 @@
         }
         else
         {
-            @foreach (var streaming in model.Streamings)
-            {
-                <div class="col-md-3 mb-2">
+            <Virtualize ItemsProvider="LoadStreamings" Context="streaming">
+                <div class="col-md-3 mb-2" @key="@streaming.Slug">
                     <StreamingItem Streaming="streaming" />
                 </div>
-            }
+            </Virtualize>
         }
     </div>
-    @if (model.NumberOfPages > 1)
-    {
-        <div class="row">
-            <div class="col-md-12">
-                <nav aria-label="Page navigation" class="d-flex">
-                    <ul class="pagination">
-                        <li class="page-item">
-                            <span class="page-link">
-                                pagina @search.Page di @model.NumberOfPages
-                            </span>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="archivio/@PreviousPage">
-                                <span aria-hidden="true">&laquo;</span>
-                                prec.
-                            </a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="archivio/@NextPage">
-                                succ.
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+    @*<div class="row">
+        <div class="col-md-12">
+            <nav aria-label="Page navigation" class="d-flex">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link">
+                            <span aria-hidden="true">&laquo;</span>
+                            prec.
+                        </button>
+                    </li>
+                    <li class="page-item">
+                        <button class="page-link">
+                            succ.
+                            <span aria-hidden="true">&raquo;</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
         </div>
-    }
+    </div>*@
 </Loader>
 
 @code {
-    [Parameter]
-    public int? Page { get; set; }
-
-    private int PreviousPage => search.Page <= 1 ? 1 : search.Page - 1;
-
-    private int NextPage => search.Page >= model.NumberOfPages ? model.NumberOfPages : search.Page + 1;
-
     private bool loading = false;
 
     private ArchiveViewModel model = new();
 
+    private List<StreamingList.StreamingListItem> streamings = [];
+
     private StreamingsSearchParameters search = new();
+
+    private async ValueTask<ItemsProviderResult<StreamingList.StreamingListItem>> LoadStreamings(ItemsProviderRequest request)
+    {
+        await LoadStreamingsAsync();
+
+        if (!model.HasNextPage)
+        {
+            return new([], 100);
+        }
+
+        return new(model.Streamings, 100);
+    }
 
     private async Task LoadStreamingsAsync()
     {
@@ -111,7 +109,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        search.Page = Page ?? 1;
+        //search.Page = Page ?? 1;
         await LoadStreamingsAsync();
     }
 }

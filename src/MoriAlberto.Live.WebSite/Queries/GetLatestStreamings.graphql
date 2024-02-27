@@ -1,4 +1,4 @@
-query GetScheduledStreamings {
+query GetLatestStreamings {
   streamings (
     orderBy: {
       ScheduleDate: DESC,

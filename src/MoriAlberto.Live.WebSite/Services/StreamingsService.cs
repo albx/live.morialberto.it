@@ -30,7 +30,7 @@ public class StreamingsService
                 StartTime = TimeOnly.Parse(s.StartingTime)
             }).FirstOrDefault();
 
-        var queryResult = await Client.GetScheduledStreamings.ExecuteAsync();
+        var queryResult = await Client.GetLatestStreamings.ExecuteAsync();
         model.Streamings = queryResult.Data?
             .Streamings
             .Items
@@ -51,21 +51,43 @@ public class StreamingsService
 
     public async Task<ArchiveViewModel> GetStreamingsArchiveAsync(StreamingsSearchParameters? search = null)
     {
-        var url = "api/streamings";
-        if (search is not null)
+        search ??= new StreamingsSearchParameters();
+
+        var sortDirection = search.Sort switch
         {
-            url = $"{url}?sort={search.Sort}&p={search.Page}";
-            if (!string.IsNullOrWhiteSpace(search.Query))
-            {
-                url = $"{url}&q={System.Web.HttpUtility.UrlEncode(search.Query)}";
-            }
+            StreamingsSearchParameters.SortDirection.Ascending => OrderBy.Asc,
+            _ => OrderBy.Desc
+        };
+
+        var streamingsQuery = await Client.GetStreamingsArchive.ExecuteAsync(
+            search.Query,
+            sortDirection,
+            numberOfItems: 20,
+            search.PageCursor);
+
+        var endCursor = streamingsQuery.Data?.Streamings.EndCursor;
+        if (!string.IsNullOrEmpty(endCursor))
+        {
+            search.PageCursor = endCursor;
         }
 
         //var streamingList = await Client.GetFromJsonAsync<StreamingList>(url);
+        var streamings = streamingsQuery.Data?
+            .Streamings
+            .Items
+            .Select(s => new StreamingList.StreamingListItem
+            {
+                Title = s.Title,
+                Slug = s.Slug,
+                ScheduleDate = DateOnly.FromDateTime(s.ScheduleDate.Date),
+                EndTime = TimeOnly.Parse(s.EndingTime),
+                StartTime = TimeOnly.Parse(s.StartingTime)
+            }) ?? [];
+
         var model = new ArchiveViewModel
         {
-            Streamings = [], //streamingList?.Streamings ?? Array.Empty<StreamingList.StreamingListItem>(),
-            NumberOfPages = 0 //streamingList?.NumberOfPages ?? 0
+            Streamings = streamings,
+            HasNextPage = streamingsQuery.Data?.Streamings.HasNextPage ?? false
         };
 
         return model;
@@ -92,4 +114,6 @@ public class StreamingsService
         //    YouTubeUrl = streaming.YouTubeVideoUrl?.Replace("https://youtu.be", "https://www.youtube.com/embed")
         //};
     }
+
+    internal static List<string?> PageCursorMap = [null];
 }
