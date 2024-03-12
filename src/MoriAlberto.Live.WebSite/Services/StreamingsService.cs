@@ -1,4 +1,5 @@
-﻿using MoriAlberto.Live.Models;
+﻿using Markdig;
+using MoriAlberto.Live.Models;
 using MoriAlberto.Live.WebSite.Client;
 using MoriAlberto.Live.WebSite.Model;
 
@@ -71,7 +72,6 @@ public class StreamingsService
             search.PageCursor = endCursor;
         }
 
-        //var streamingList = await Client.GetFromJsonAsync<StreamingList>(url);
         var streamings = streamingsQuery.Data?
             .Streamings
             .Items
@@ -95,25 +95,32 @@ public class StreamingsService
 
     public async Task<LiveDetailViewModel?> GetStreamingDetailAsync(string slug)
     {
-        return new();
-        //var streaming = await Client.GetFromJsonAsync<Streaming>($"api/streamings/detail/{slug}");
-        //if (streaming is null)
-        //{
-        //    return null;
-        //}
+        var streamingDetailQuery = await Client.GetStreamingDetail.ExecuteAsync(slug);
+        var streaming = streamingDetailQuery.Data?
+            .Streamings
+            .Items
+            .SingleOrDefault();
 
-        //return new LiveDetailViewModel
-        //{
-        //    Abstract = Markdown.ToHtml(streaming.Abstract),
-        //    EndTime = streaming.EndingTime,
-        //    ScheduleDate = streaming.ScheduleDate,
-        //    Seo = streaming.Seo,
-        //    StartTime = streaming.StartingTime,
-        //    Title = streaming.Title,
-        //    TwitchUrl = streaming.HostingChannelUrl,
-        //    YouTubeUrl = streaming.YouTubeVideoUrl?.Replace("https://youtu.be", "https://www.youtube.com/embed")
-        //};
+        if (streaming is null)
+        {
+            return null;
+        }
+
+        return new()
+        {
+            Abstract = Markdown.ToHtml(streaming.Abstract ?? string.Empty),
+            EndTime = TimeOnly.Parse(streaming.EndingTime),
+            ScheduleDate = DateOnly.FromDateTime(streaming.ScheduleDate.Date),
+            StartTime = TimeOnly.Parse(streaming.StartingTime),
+            Title = streaming.Title,
+            TwitchUrl = streaming.HostingChannelUrl,
+            YouTubeUrl = streaming.YouTubeVideoUrl?.Replace("https://youtu.be", "https://www.youtube.com/embed"),
+            Seo = new LiveDetailViewModel.SeoInfo
+            {
+                Title = streaming.Seo_Title ?? string.Empty,
+                Description = streaming.Seo_Description ?? string.Empty,
+                Keywords = streaming.Seo_Keywords ?? string.Empty,
+            }
+        };
     }
-
-    internal static List<string?> PageCursorMap = [null];
 }

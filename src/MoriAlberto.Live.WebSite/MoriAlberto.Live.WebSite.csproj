@@ -9,6 +9,7 @@
   <ItemGroup>
     <GraphQL Remove="Queries\GetLatestStreamings.graphql" />
     <GraphQL Remove="queries\GetNextStreaming.graphql" />
+    <GraphQL Remove="queries\GetStreamingDetail.graphql" />
     <GraphQL Remove="queries\GetStreamingsArchive.graphql" />
   </ItemGroup>
 

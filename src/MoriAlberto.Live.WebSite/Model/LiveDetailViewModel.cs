@@ -18,5 +18,14 @@ public class LiveDetailViewModel
 
     public string? YouTubeUrl { get; init; } = string.Empty;
 
-    public Streaming.SeoInfo Seo { get; init; } = new();
+    public SeoInfo Seo { get; init; } = new();
+
+    public record SeoInfo
+    {
+        public string Title { get; init; } = string.Empty;
+
+        public string Description { get; init; } = string.Empty;
+
+        public string Keywords { get; init; } = string.Empty;
+    }
 }
