@@ -34,10 +34,19 @@
         <div class="row">
             @foreach (var streaming in model.Streamings)
             {
-                <div class="col-md-6 mb-2">
+                <div class="col-md-3 mb-2">
                     <StreamingItem Streaming="streaming" />
                 </div>
             }
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="d-grid">
+                    <a href="archivio" class="btn btn-outline-primary">
+                        Vai all'archivio delle dirette
+                    </a>
+                </div>
+            </div>
         </div>
     }
 </Loader>

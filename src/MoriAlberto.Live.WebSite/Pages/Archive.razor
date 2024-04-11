@@ -38,25 +38,26 @@
         }
         else
         {
-            <Virtualize ItemsProvider="LoadStreamings" Context="streaming">
-                <div class="col-md-3 mb-2" @key="@streaming.Slug">
+            @foreach (var streaming in model.Streamings)
+            {
+                <div class="col-md-3 mb-2">
                     <StreamingItem Streaming="streaming" />
                 </div>
-            </Virtualize>
+            }
         }
     </div>
-    @*<div class="row">
+    <div class="row">
         <div class="col-md-12">
-            <nav aria-label="Page navigation" class="d-flex">
+            <nav aria-label="page navigation" class="d-flex">
                 <ul class="pagination">
                     <li class="page-item">
-                        <button class="page-link">
+                        <button disabled="@(search.Page == 0)" class="page-link" @onclick="MoveToPreviousPagePageAsync">
                             <span aria-hidden="true">&laquo;</span>
                             prec.
                         </button>
                     </li>
                     <li class="page-item">
-                        <button class="page-link">
+                        <button disabled="@(!model.HasNextPage)" class="page-link" @onclick="MoveToNextPageAsync">
                             succ.
                             <span aria-hidden="true">&raquo;</span>
                         </button>
@@ -64,7 +65,7 @@
                 </ul>
             </nav>
         </div>
-    </div>*@
+    </div>
 </Loader>
 
 @code {
@@ -76,16 +77,24 @@
 
     private StreamingsSearchParameters search = new();
 
-    private async ValueTask<ItemsProviderResult<StreamingList.StreamingListItem>> LoadStreamings(ItemsProviderRequest request)
+    private async Task MoveToNextPageAsync()
     {
-        await LoadStreamingsAsync();
-
-        if (!model.HasNextPage)
+        if (model.HasNextPage)
         {
-            return new([], 100);
+            search.Page++;
+            await LoadStreamingsAsync();
         }
+    }
 
-        return new(model.Streamings, 100);
+    private async Task MoveToPreviousPagePageAsync()
+    {
+        if (search.Page > 0)
+        {
+            PageCursorProvider.RemoveCursor(search.Page);
+            search.Page--;
+
+            await LoadStreamingsAsync();
+        }
     }
 
     private async Task LoadStreamingsAsync()
@@ -104,12 +113,12 @@
 
     private async Task SearchStreamingsAsync()
     {
+        search.Page = 0;
         await LoadStreamingsAsync();
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        //search.Page = Page ?? 1;
         await LoadStreamingsAsync();
     }
 }

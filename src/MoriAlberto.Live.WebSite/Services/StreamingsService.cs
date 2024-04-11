@@ -60,17 +60,16 @@ public class StreamingsService
             _ => OrderBy.Desc
         };
 
+        var pageCursor = PageCursorProvider.GetCursor(search.Page);
+
         var streamingsQuery = await Client.GetStreamingsArchive.ExecuteAsync(
             search.Query,
             sortDirection,
-            numberOfItems: 20,
-            search.PageCursor);
+            numberOfItems: 12,
+            pageCursor);
 
         var endCursor = streamingsQuery.Data?.Streamings.EndCursor;
-        if (!string.IsNullOrEmpty(endCursor))
-        {
-            search.PageCursor = endCursor;
-        }
+        PageCursorProvider.AddCursor(search.Page + 1, endCursor);
 
         var streamings = streamingsQuery.Data?
             .Streamings
