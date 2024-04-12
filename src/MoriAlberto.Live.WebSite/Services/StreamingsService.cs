@@ -7,9 +7,9 @@ namespace MoriAlberto.Live.WebSite.Services;
 
 public class StreamingsService
 {
-    public StreamingsClient Client { get; }
+    public IStreamingsClient Client { get; }
 
-    public StreamingsService(StreamingsClient client)
+    public StreamingsService(IStreamingsClient client)
     {
         Client = client ?? throw new ArgumentNullException(nameof(client));
     }
@@ -17,9 +17,10 @@ public class StreamingsService
     public async Task<IndexViewModel> GetStreamingsForHomePageAsync()
     {
         var model = new IndexViewModel();
+        var todayOffset = new DateTimeOffset(DateTime.Today);
 
-        model.NextStreaming = (await Client.GetNextStreaming.ExecuteAsync(new DateTimeOffset(DateTime.Today)))
-            .Data?
+        var nextStreamingResult = await Client.GetNextStreaming.ExecuteAsync(todayOffset);
+        model.NextStreaming = nextStreamingResult.Data?
             .Streamings
             .Items
             .Select(s => new StreamingList.StreamingListItem
@@ -31,8 +32,8 @@ public class StreamingsService
                 StartTime = TimeOnly.Parse(s.StartingTime)
             }).FirstOrDefault();
 
-        var queryResult = await Client.GetLatestStreamings.ExecuteAsync();
-        model.Streamings = queryResult.Data?
+        var latestStreamingsResult = await Client.GetLatestStreamings.ExecuteAsync(todayOffset);
+        model.Streamings = latestStreamingsResult.Data?
             .Streamings
             .Items
             .Select(s => new StreamingList.StreamingListItem
@@ -43,9 +44,6 @@ public class StreamingsService
                 Slug = s.Slug,
                 StartTime = TimeOnly.Parse(s.StartingTime)
             }) ?? [];
-
-        //var streamings = await Client.GetFromJsonAsync<IEnumerable<StreamingList.StreamingListItem>>("api/streamings/scheduled");
-        //model.Streamings = streamings ?? Array.Empty<StreamingList.StreamingListItem>();
 
         return model;
     }

@@ -22,7 +22,7 @@ input DefaultValue {
   LocalTime: LocalTime
 }
 
-type Streamings {
+type Streaming {
   Id: UUID!
   UserId: String!
   Title: String!
@@ -42,8 +42,8 @@ type Streamings {
   YouTubeVideoUrl: String
 }
 
-"Order by input for Streamings GraphQL type"
-input StreamingsOrderByInput {
+"Order by input for Streaming GraphQL type"
+input StreamingOrderByInput {
   "Order by options for Id"
   Id: OrderBy
   "Order by options for UserId"
@@ -79,9 +79,9 @@ input StreamingsOrderByInput {
   "Order by options for YouTubeVideoUrl"
   YouTubeVideoUrl: OrderBy
   "Conditions to be treated as AND operations"
-  and: [StreamingsOrderByInput]
+  and: [StreamingOrderByInput]
   "Conditions to be treated as OR operations"
-  or: [StreamingsOrderByInput]
+  or: [StreamingOrderByInput]
 }
 
 "Input type for adding Uuid filters"
@@ -160,8 +160,8 @@ input LocalTimeFilterInput {
   isNull: Boolean
 }
 
-"Filter input for Streamings GraphQL type"
-input StreamingsFilterInput {
+"Filter input for Streaming GraphQL type"
+input StreamingFilterInput {
   "Filter options for Id"
   Id: UuidFilterInput
   "Filter options for UserId"
@@ -197,22 +197,22 @@ input StreamingsFilterInput {
   "Filter options for YouTubeVideoUrl"
   YouTubeVideoUrl: StringFilterInput
   "Conditions to be treated as AND operations"
-  and: [StreamingsFilterInput]
+  and: [StreamingFilterInput]
   "Conditions to be treated as OR operations"
-  or: [StreamingsFilterInput]
+  or: [StreamingFilterInput]
 }
 
 type Query {
-  "Get a list of all the Streamings items from the database"
-  streamings("The number of items to return from the page start point" first: Int "A pagination token from a previous query to continue through a paginated list" after: String "Filter options for query" filter: StreamingsFilterInput "Ordering options for query" orderBy: StreamingsOrderByInput): StreamingsConnection!
-  "Get a Streamings from the database by its ID\/primary key"
-  streamings_by_pk(Id: UUID!): Streamings
+  "Get a list of all the Streaming items from the database"
+  streamings("The number of items to return from the page start point" first: Int "A pagination token from a previous query to continue through a paginated list" after: String "Filter options for query" filter: StreamingFilterInput "Ordering options for query" orderBy: StreamingOrderByInput): StreamingConnection!
+  "Get a Streaming from the database by its ID\/primary key"
+  streaming_by_pk(Id: UUID!): Streaming
 }
 
 "The return object from a filter query that supports a pagination token for paging through results"
-type StreamingsConnection {
+type StreamingConnection {
   "The list of items that matched the filter"
-  items: [Streamings!]!
+  items: [Streaming!]!
   "A pagination token to provide to subsequent pages of a query"
   endCursor: String
   "Indicates if there are more pages of items to return"

@@ -1,10 +1,14 @@
-query GetLatestStreamings {
+query GetLatestStreamings($scheduleDate: DateTime) {
   streamings (
     orderBy: {
       ScheduleDate: DESC,
       StartingTime: DESC,
       EndingTime: DESC 
-    }, first: 4) {
+    },
+    filter: { 
+        ScheduleDate: {lt: $scheduleDate}
+    },
+    first: 3) {
     items {
       Id,
       Title,

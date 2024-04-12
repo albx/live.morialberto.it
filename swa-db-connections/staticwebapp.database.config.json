@@ -1,8 +1,8 @@
 {
-  "$schema": "https://github.com/Azure/data-api-builder/releases/download/v0.9.7/dab.draft.schema.json",
+  "$schema": "https://github.com/Azure/data-api-builder/releases/download/v0.11.127/dab.draft.schema.json",
   "data-source": {
     "database-type": "mssql",
-    "connection-string": "Server=localhost\\sqlexpress;Database=KITT;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True",
+    "connection-string": "@env('DATABASE_CONNECTION_STRING')",
     "options": {
       "set-session-context": false
     }
@@ -27,6 +27,10 @@
         "provider": "StaticWebApps"
       },
       "mode": "development"
+    },
+    "cache": {
+      "enabled": true,
+      "ttl-seconds": 7200
     }
   },
   "entities": {
@@ -41,7 +45,7 @@
       "graphql": {
         "enabled": true,
         "type": {
-          "singular": "Streamings",
+          "singular": "Streaming",
           "plural": "Streamings"
         }
       },
