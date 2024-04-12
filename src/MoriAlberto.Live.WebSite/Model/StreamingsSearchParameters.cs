@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MoriAlberto.Live.Models;
+namespace MoriAlberto.Live.WebSite.Model;
 
 public class StreamingsSearchParameters
 {

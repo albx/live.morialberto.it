@@ -1,10 +1,8 @@
-﻿using MoriAlberto.Live.Models;
-
-namespace MoriAlberto.Live.WebSite.Model;
+﻿namespace MoriAlberto.Live.WebSite.Model;
 
 public class IndexViewModel
 {
-    public StreamingList.StreamingListItem? NextStreaming { get; set; }
+    public StreamingListItem? NextStreaming { get; set; }
 
-    public IEnumerable<StreamingList.StreamingListItem> Streamings { get; set; } = [];
+    public IEnumerable<StreamingListItem> Streamings { get; set; } = [];
 }

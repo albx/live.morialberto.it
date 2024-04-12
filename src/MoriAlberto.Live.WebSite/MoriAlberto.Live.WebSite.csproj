@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MoriAlberto.Live.Models\MoriAlberto.Live.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="wwwroot\images\logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

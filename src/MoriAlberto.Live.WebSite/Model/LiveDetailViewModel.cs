@@ -1,6 +1,4 @@
-﻿using MoriAlberto.Live.Models;
-
-namespace MoriAlberto.Live.WebSite.Model;
+﻿namespace MoriAlberto.Live.WebSite.Model;
 
 public class LiveDetailViewModel
 {

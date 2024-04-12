@@ -1,5 +1,4 @@
 ﻿using Markdig;
-using MoriAlberto.Live.Models;
 using MoriAlberto.Live.WebSite.Client;
 using MoriAlberto.Live.WebSite.Model;
 
@@ -23,7 +22,7 @@ public class StreamingsService
         model.NextStreaming = nextStreamingResult.Data?
             .Streamings
             .Items
-            .Select(s => new StreamingList.StreamingListItem
+            .Select(s => new StreamingListItem
             {
                 Title = s.Title,
                 ScheduleDate = DateOnly.FromDateTime(s.ScheduleDate.DateTime),
@@ -36,7 +35,7 @@ public class StreamingsService
         model.Streamings = latestStreamingsResult.Data?
             .Streamings
             .Items
-            .Select(s => new StreamingList.StreamingListItem
+            .Select(s => new StreamingListItem
             {
                 Title = s.Title,
                 EndTime = TimeOnly.Parse(s.EndingTime),
@@ -72,7 +71,7 @@ public class StreamingsService
         var streamings = streamingsQuery.Data?
             .Streamings
             .Items
-            .Select(s => new StreamingList.StreamingListItem
+            .Select(s => new StreamingListItem
             {
                 Title = s.Title,
                 Slug = s.Slug,

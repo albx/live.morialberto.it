@@ -7,8 +7,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AB23CC3A-3C3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.WebSite", "src\MoriAlberto.Live.WebSite\MoriAlberto.Live.WebSite.csproj", "{F1C5BD48-6EF7-4B0E-BD1A-0470CD58E2D8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoriAlberto.Live.Models", "src\MoriAlberto.Live.Models\MoriAlberto.Live.Models.csproj", "{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "swa-db-connections", "swa-db-connections", "{EA01D87E-7B1C-4112-85C4-85CB32C5120A}"
 	ProjectSection(SolutionItems) = preProject
 		swa-db-connections\staticwebapp.database.config.json = swa-db-connections\staticwebapp.database.config.json
@@ -34,17 +32,12 @@ Global
 		{F1C5BD48-6EF7-4B0E-BD1A-0470CD58E2D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1C5BD48-6EF7-4B0E-BD1A-0470CD58E2D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1C5BD48-6EF7-4B0E-BD1A-0470CD58E2D8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F1C5BD48-6EF7-4B0E-BD1A-0470CD58E2D8} = {AB23CC3A-3C3C-4F83-A76E-DCB67B5AF7BD}
-		{745A07A9-1A45-4AF1-8487-37F1CD6AEFCE} = {AB23CC3A-3C3C-4F83-A76E-DCB67B5AF7BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4C292140-6156-4F57-BE5C-DD60BE9453B5}
