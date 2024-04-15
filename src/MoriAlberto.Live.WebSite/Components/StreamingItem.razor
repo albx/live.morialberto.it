@@ -1,9 +1,11 @@
-﻿<div class="card">
+﻿<div class="card" style="height:100%;">
     <div class="card-body">
         <h5 class="card-title">@Streaming.Title</h5>
         <h6 class="card-subtitle mb-2 text-muted">
             @Streaming.ScheduleDate.ToShortDateString() @Streaming.StartTime.ToShortTimeString() - @Streaming.EndTime.ToShortTimeString()
         </h6>
+    </div>
+    <div class="card-footer">
         <a href="/d/@Streaming.Slug">Vai al dettaglio</a>
     </div>
 </div>
