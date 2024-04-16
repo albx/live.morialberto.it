@@ -1,9 +1,9 @@
 ﻿@page "/archivio"
 @inject StreamingsService Service
 
-<PageTitle>Le mie dirette</PageTitle>
+<PageTitle>Alberto Mori - le mie dirette</PageTitle>
 <HeadContent>
-    <meta name="title" content="Le mie dirette" />
+    <meta name="title" content="Alberto Mori - le mie dirette" />
     <meta name="description" content="Qui puoi trovare l'elenco di tutte le dirette sia pianificate che già svolte sul canale" />
 </HeadContent>
 
@@ -12,7 +12,7 @@
 
 <Loader Loading="loading">
     <EditForm class="row" role="form" Model="search" OnValidSubmit="SearchStreamingsAsync">
-        <div class="col-md-2">
+        <div class="col-md-2 mb-2">
             <InputSelect @bind-Value="search.Sort" class="form-select">
                 @foreach (var sort in Enum.GetValues<StreamingsSearchParameters.SortDirection>())
                 {
@@ -20,31 +20,39 @@
                 }
             </InputSelect>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-8 mb-2">
             <InputText @bind-Value="search.Query" class="form-control" placeholder="Cerca una diretta..." aria-label="Cerca una diretta" />
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 mb-2">
             <button class="btn btn-outline-secondary" type="submit" id="button-search">Cerca</button>
         </div>
     </EditForm>
     <hr />
 
     <div class="row">
-        @if (!model.Streamings.Any())
+        @if (changingPage)
         {
-            <div class="col-md-12">
-                <h2>Nessuna live presente :(</h2>
-            </div>
+            <PaginationPlaceholder />
         }
         else
         {
-            @foreach (var streaming in model.Streamings)
+            @if (!model.Streamings.Any())
             {
-                <div class="col-md-3 mb-2">
-                    <StreamingItem Streaming="streaming" />
+                <div class="col-md-12">
+                    <h2>Nessuna live presente :(</h2>
                 </div>
             }
+            else
+            {
+                @foreach (var streaming in model.Streamings)
+                {
+                    <div class="col-md-3 mb-2">
+                        <StreamingItem Streaming="streaming" />
+                    </div>
+                }
+            }
         }
+
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -71,6 +79,8 @@
 @code {
     private bool loading = false;
 
+    private bool changingPage = false;
+
     private ArchiveViewModel model = new();
 
     private List<StreamingListItem> streamings = [];
@@ -81,8 +91,18 @@
     {
         if (model.HasNextPage)
         {
+            changingPage = true;
             search.Page++;
-            await LoadStreamingsAsync();
+
+            try
+            {
+                await Task.Delay(2000);
+                await LoadStreamingsAsync();
+            }
+            finally
+            {
+                changingPage = false;
+            }
         }
     }
 
@@ -90,20 +110,34 @@
     {
         if (search.Page > 0)
         {
+            changingPage = true;
             PageCursorProvider.RemoveCursor(search.Page);
             search.Page--;
 
-            await LoadStreamingsAsync();
+            try
+            {
+                await LoadStreamingsAsync();
+            }
+            finally
+            {
+                changingPage = false;
+            }
         }
     }
 
     private async Task LoadStreamingsAsync()
     {
+        model = await Service.GetStreamingsArchiveAsync(search);
+    }
+
+    private async Task SearchStreamingsAsync()
+    {
+        search.Page = 0;
         loading = true;
 
         try
         {
-            model = await Service.GetStreamingsArchiveAsync(search);
+            await LoadStreamingsAsync();
         }
         finally
         {
@@ -111,14 +145,17 @@
         }
     }
 
-    private async Task SearchStreamingsAsync()
-    {
-        search.Page = 0;
-        await LoadStreamingsAsync();
-    }
-
     protected override async Task OnInitializedAsync()
     {
-        await LoadStreamingsAsync();
+        loading = true;
+
+        try
+        {
+            await LoadStreamingsAsync();
+        }
+        finally
+        {
+            loading = false;
+        }
     }
 }
