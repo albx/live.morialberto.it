@@ -1,0 +1,20 @@
+query GetStreamingDetail($slug: String) {
+	streamings (
+		filter: { Slug: { eq: $slug } }
+		first: 1
+	) {
+		items {
+			Id,
+			ScheduleDate,
+			StartingTime,
+			EndingTime,
+			HostingChannelUrl,
+			YouTubeVideoUrl,
+			Abstract,
+			Title,
+			Seo_Title,
+			Seo_Description,
+			Seo_Keywords
+		}
+	}
+}

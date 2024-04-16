@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace MoriAlberto.Live.Models;
+namespace MoriAlberto.Live.WebSite.Model;
 
 public class StreamingsSearchParameters
 {
@@ -8,7 +8,7 @@ public class StreamingsSearchParameters
 
     public SortDirection Sort { get; set; } = SortDirection.Descending;
 
-    public int Page { get; set; } = 1;
+    public int Page { get; set; } = 0;
 
     public enum SortDirection
     {

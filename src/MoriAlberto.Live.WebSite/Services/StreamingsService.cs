@@ -1,15 +1,14 @@
 ﻿using Markdig;
-using MoriAlberto.Live.Models;
+using MoriAlberto.Live.WebSite.Client;
 using MoriAlberto.Live.WebSite.Model;
-using System.Net.Http.Json;
 
 namespace MoriAlberto.Live.WebSite.Services;
 
 public class StreamingsService
 {
-    public HttpClient Client { get; }
+    public IStreamingsClient Client { get; }
 
-    public StreamingsService(HttpClient client)
+    public StreamingsService(IStreamingsClient client)
     {
         Client = client ?? throw new ArgumentNullException(nameof(client));
     }
@@ -17,30 +16,74 @@ public class StreamingsService
     public async Task<IndexViewModel> GetStreamingsForHomePageAsync()
     {
         var model = new IndexViewModel();
+        var todayOffset = new DateTimeOffset(DateTime.Today);
 
-        var streamings = await Client.GetFromJsonAsync<IEnumerable<StreamingList.StreamingListItem>>("api/streamings/scheduled");
-        model.Streamings = streamings ?? Array.Empty<StreamingList.StreamingListItem>();
+        var nextStreamingResult = await Client.GetNextStreaming.ExecuteAsync(todayOffset);
+        model.NextStreaming = nextStreamingResult.Data?
+            .Streamings
+            .Items
+            .Select(s => new StreamingListItem
+            {
+                Title = s.Title,
+                ScheduleDate = DateOnly.FromDateTime(s.ScheduleDate.DateTime),
+                Slug = s.Slug,
+                EndTime = TimeOnly.Parse(s.EndingTime),
+                StartTime = TimeOnly.Parse(s.StartingTime)
+            }).FirstOrDefault();
+
+        var latestStreamingsResult = await Client.GetLatestStreamings.ExecuteAsync(todayOffset);
+        model.Streamings = latestStreamingsResult.Data?
+            .Streamings
+            .Items
+            .Select(s => new StreamingListItem
+            {
+                Title = s.Title,
+                EndTime = TimeOnly.Parse(s.EndingTime),
+                ScheduleDate = DateOnly.FromDateTime(s.ScheduleDate.DateTime),
+                Slug = s.Slug,
+                StartTime = TimeOnly.Parse(s.StartingTime)
+            }) ?? [];
 
         return model;
     }
 
     public async Task<ArchiveViewModel> GetStreamingsArchiveAsync(StreamingsSearchParameters? search = null)
     {
-        var url = "api/streamings";
-        if (search is not null)
-        {
-            url = $"{url}?sort={search.Sort}&p={search.Page}";
-            if (!string.IsNullOrWhiteSpace(search.Query))
-            {
-                url = $"{url}&q={System.Web.HttpUtility.UrlEncode(search.Query)}";
-            }
-        }
+        search ??= new StreamingsSearchParameters();
 
-        var streamingList = await Client.GetFromJsonAsync<StreamingList>(url);
+        var sortDirection = search.Sort switch
+        {
+            StreamingsSearchParameters.SortDirection.Ascending => OrderBy.Asc,
+            _ => OrderBy.Desc
+        };
+
+        var pageCursor = PageCursorProvider.GetCursor(search.Page);
+
+        var streamingsQuery = await Client.GetStreamingsArchive.ExecuteAsync(
+            search.Query,
+            sortDirection,
+            numberOfItems: 12,
+            pageCursor);
+
+        var endCursor = streamingsQuery.Data?.Streamings.EndCursor;
+        PageCursorProvider.AddCursor(search.Page + 1, endCursor);
+
+        var streamings = streamingsQuery.Data?
+            .Streamings
+            .Items
+            .Select(s => new StreamingListItem
+            {
+                Title = s.Title,
+                Slug = s.Slug,
+                ScheduleDate = DateOnly.FromDateTime(s.ScheduleDate.Date),
+                EndTime = TimeOnly.Parse(s.EndingTime),
+                StartTime = TimeOnly.Parse(s.StartingTime)
+            }) ?? [];
+
         var model = new ArchiveViewModel
         {
-            Streamings = streamingList?.Streamings ?? Array.Empty<StreamingList.StreamingListItem>(),
-            NumberOfPages = streamingList?.NumberOfPages ?? 0
+            Streamings = streamings,
+            HasNextPage = streamingsQuery.Data?.Streamings.HasNextPage ?? false
         };
 
         return model;
@@ -48,22 +91,32 @@ public class StreamingsService
 
     public async Task<LiveDetailViewModel?> GetStreamingDetailAsync(string slug)
     {
-        var streaming = await Client.GetFromJsonAsync<Streaming>($"api/streamings/detail/{slug}");
+        var streamingDetailQuery = await Client.GetStreamingDetail.ExecuteAsync(slug);
+        var streaming = streamingDetailQuery.Data?
+            .Streamings
+            .Items
+            .SingleOrDefault();
+
         if (streaming is null)
         {
             return null;
         }
 
-        return new LiveDetailViewModel
+        return new()
         {
-            Abstract = Markdown.ToHtml(streaming.Abstract),
-            EndTime = streaming.EndingTime,
-            ScheduleDate = streaming.ScheduleDate,
-            Seo = streaming.Seo,
-            StartTime = streaming.StartingTime,
+            Abstract = Markdown.ToHtml(streaming.Abstract ?? string.Empty),
+            EndTime = TimeOnly.Parse(streaming.EndingTime),
+            ScheduleDate = DateOnly.FromDateTime(streaming.ScheduleDate.Date),
+            StartTime = TimeOnly.Parse(streaming.StartingTime),
             Title = streaming.Title,
             TwitchUrl = streaming.HostingChannelUrl,
-            YouTubeUrl = streaming.YouTubeVideoUrl?.Replace("https://youtu.be", "https://www.youtube.com/embed")
+            YouTubeUrl = streaming.YouTubeVideoUrl?.Replace("https://youtu.be", "https://www.youtube.com/embed"),
+            Seo = new LiveDetailViewModel.SeoInfo
+            {
+                Title = streaming.Seo_Title ?? string.Empty,
+                Description = streaming.Seo_Description ?? string.Empty,
+                Keywords = streaming.Seo_Keywords ?? string.Empty,
+            }
         };
     }
 }

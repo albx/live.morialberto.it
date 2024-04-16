@@ -1,0 +1,28 @@
+query GetStreamingsArchive(
+    $query: String, 
+    $sortDirection: OrderBy,
+    $numberOfItems: Int,
+    $pageCursor: String) {
+  streamings (
+    orderBy: {
+      ScheduleDate: $sortDirection,
+      StartingTime: $sortDirection,
+      EndingTime: $sortDirection 
+    }, 
+    filter: {
+      Title: {contains: $query}
+    }
+    first: $numberOfItems,
+    after: $pageCursor) {
+    items {
+      Id,
+      Title,
+      Slug,
+      ScheduleDate,
+      StartingTime,
+      EndingTime
+    },
+    hasNextPage,
+    endCursor
+  }
+}

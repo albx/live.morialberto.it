@@ -3,7 +3,7 @@
   "configurations": {
     "live.morialberto.it": {
       "appLocation": "src\\MoriAlberto.Live.WebSite",
-      "apiLocation": "src\\MoriAlberto.Live.Api",
+      "apiLocation": "",
       "outputLocation": "bin\\wwwroot",
       "appBuildCommand": "dotnet publish -c Release -o bin",
       "apiBuildCommand": "dotnet publish -c Release",

@@ -1,0 +1,1 @@
+$env:DATABASE_CONNECTION_STRING='Server=localhost\sqlexpress;Database=KITT;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True'
