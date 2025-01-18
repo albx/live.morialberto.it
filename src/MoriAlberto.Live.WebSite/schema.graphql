@@ -42,6 +42,11 @@ type Streaming {
   YouTubeVideoUrl: String
 }
 
+type DbOperationResult {
+  "Contains result for mutation execution"
+  result: String
+}
+
 "Order by input for Streaming GraphQL type"
 input StreamingOrderByInput {
   "Order by options for Id"
@@ -255,13 +260,16 @@ directive @oneOf on INPUT_OBJECT
 directive @authorize("The name of the authorization policy that determines access to the annotated resource." policy: String "Roles that are allowed to access the annotated resource." roles: [String!] "Defines when when the resolver shall be executed.By default the resolver is executed after the policy has determined that the current user is allowed to access the field." apply: ApplyPolicy! = BEFORE_RESOLVER) repeatable on SCHEMA | OBJECT | FIELD_DEFINITION
 
 "A directive to indicate the type maps to a storable entity not a nested entity."
-directive @model("Underlying name of the database entity." name: String) on OBJECT
+directive @model("Underlying name of the database entity." name: String) on OBJECT | FIELD_DEFINITION
 
 "A directive to indicate the relationship between two tables"
 directive @relationship("The name of the GraphQL type the relationship targets" target: String "The relationship cardinality" cardinality: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
 
 "A directive to indicate the primary key field of an item."
 directive @primaryKey("The underlying database type." databaseType: String) on FIELD_DEFINITION
+
+"When present on a field in a database table, indicates that the field is a referencing field to some field in the same\/another database table."
+directive @dab_referencingField on FIELD_DEFINITION
 
 "The default value to be used when creating an item."
 directive @defaultValue(value: DefaultValue) on FIELD_DEFINITION
