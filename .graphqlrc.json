@@ -10,10 +10,10 @@
     },
     {
       "schema": [
-        "src/MoriAlberto.Live.WebSite/bin/Debug/net8.0/schema.graphql"
+        "src/MoriAlberto.Live.WebSite/bin/Debug/net9.0/schema.graphql"
       ],
       "documents": [
-        "src/MoriAlberto.Live.WebSite/bin/Debug/net8.0/**/*.graphql"
+        "src/MoriAlberto.Live.WebSite/bin/Debug/net9.0/**/*.graphql"
       ]
     }
   ]
